@@ -32,8 +32,8 @@ CREATE TABLE BuildPlans (
 
 CREATE TABLE BuildSteps (
   id               SERIAL  NOT NULL PRIMARY KEY,
-  result_component INTEGER NOT NULL REFERENCES Components (id) ON DELETE CASCADE,
-  machine          INTEGER NOT NULL REFERENCES Machines (id) ON DELETE CASCADE,
+  result_component INTEGER NOT NULL REFERENCES Components (id) ON DELETE RESTRICT,
+  machine          INTEGER NOT NULL REFERENCES Machines (id) ON DELETE RESTRICT,
   hours            INTEGER NOT NULL CHECK (hours > 0),
   plan             INTEGER NOT NULL REFERENCES BuildPlans (id) ON DELETE CASCADE
 );
@@ -43,7 +43,7 @@ ALTER TABLE Components
 
 CREATE TABLE BuildStepDependencies (
   step      INTEGER NOT NULL REFERENCES BuildSteps (id) ON DELETE CASCADE,
-  component INTEGER NOT NULL REFERENCES Components (id) ON DELETE CASCADE,
+  component INTEGER NOT NULL REFERENCES Components (id) ON DELETE RESTRICT,
   PRIMARY KEY (step, component)
 );
 
