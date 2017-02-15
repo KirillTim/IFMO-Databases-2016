@@ -32,10 +32,10 @@ CREATE TABLE BuildPlans (
 
 CREATE TABLE BuildSteps (
   id               SERIAL PRIMARY KEY,
-  result_component INTEGER REFERENCES Components (id) ON DELETE CASCADE,
-  machine          INTEGER REFERENCES Machines (id) ON DELETE CASCADE,
-  hours            INTEGER CHECK (hours > 0),
-  plan             INTEGER REFERENCES BuildPlans (id) ON DELETE CASCADE
+  result_component INTEGER NOT NULL REFERENCES Components (id) ON DELETE CASCADE,
+  machine          INTEGER NOT NULL REFERENCES Machines (id) ON DELETE CASCADE,
+  hours            INTEGER NOT NULL CHECK (hours > 0),
+  plan             INTEGER NOT NULL REFERENCES BuildPlans (id) ON DELETE CASCADE
 );
 
 ALTER TABLE Components
