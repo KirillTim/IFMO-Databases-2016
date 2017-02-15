@@ -34,7 +34,8 @@ CREATE TABLE BuildSteps (
   id               SERIAL PRIMARY KEY,
   result_component INTEGER REFERENCES Components (id) ON DELETE CASCADE,
   machine          INTEGER REFERENCES Machines (id) ON DELETE CASCADE,
-  hours            INTEGER CHECK (hours > 0)
+  hours            INTEGER CHECK (hours > 0),
+  plan             INTEGER REFERENCES BuildPlans (id) ON DELETE CASCADE
 );
 
 ALTER TABLE Components
