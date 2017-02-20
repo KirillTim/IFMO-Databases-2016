@@ -8,12 +8,14 @@ INSERT INTO staff(id, first_name, second_name, hourly_wage, gender) VALUES (2, '
 INSERT INTO staff(id, first_name, second_name, hourly_wage, gender) VALUES (3, 'Sidr', 'Sidrov', 500, 'Male');
 INSERT INTO staff(id, first_name, second_name, hourly_wage, gender) VALUES (4, 'Stas', 'Michailov', 350, 'Male');
 INSERT INTO staff(id, first_name, second_name, hourly_wage, gender) VALUES (5, 'Anna', 'Ivanova', 600, 'Female');
+INSERT INTO staff(id, first_name, second_name, hourly_wage, gender) VALUES (6, 'Foo', 'Bar', 350, 'Male');
 
 INSERT INTO staffcanworkon(staff_id, machine_id) VALUES (1, 1);
 INSERT INTO staffcanworkon(staff_id, machine_id) VALUES (2, 2);
 INSERT INTO staffcanworkon(staff_id, machine_id) VALUES (3, 2);
 INSERT INTO staffcanworkon(staff_id, machine_id) VALUES (4, 3);
 INSERT INTO staffcanworkon(staff_id, machine_id) VALUES (5, 3);
+INSERT INTO staffcanworkon(staff_id, machine_id) VALUES (6, 2);
 
 INSERT INTO servicevendors(id, name, contact_info) VALUES (1, 'vendor1', 'contact');
 INSERT INTO servicevendors(id, name, contact_info) VALUES (2, 'vendor2', 'contact');
@@ -28,8 +30,6 @@ INSERT INTO components(id, name) VALUES (4, 'small rubber pipe');
 INSERT INTO components(id, name) VALUES (5, 'main component #1');
 INSERT INTO components(id, name) VALUES (6, 'main component #2');
 
-INSERT INTO buildplans(name, description) VALUES ('engine build plan', '');
-
 INSERT INTO vendors(name) VALUES ('vendor #1');
 INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(1, 1, 20);
 INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(1, 3, 10);
@@ -43,3 +43,7 @@ INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(2, 6, 250);
 INSERT INTO vendors(name) VALUES ('vendor #3');
 INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(3, 5, 190);
 INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(3, 4, 20);
+
+INSERT INTO buildplans(name, description) VALUES ('engine build plan', '');
+SELECT * FROM add_build_step(2, 2, 3, 1, ARRAY[5, 6]);
+SELECT * FROM add_build_step(6, 1, 0.5, 1, ARRAY[]::INT[]);

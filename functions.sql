@@ -37,7 +37,7 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION add_build_step(INT, INT, INT, INT, INT [])
+CREATE OR REPLACE FUNCTION add_build_step(INT, INT, FLOAT, INT, INT [])
   RETURNS VOID AS
 $$
 DECLARE
@@ -72,13 +72,64 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION machine_hour_price(INT)
+  RETURNS MONEY AS
+$$
+DECLARE
+  machine_id ALIAS FOR $1;
+  i      INT;
+  needed INT;
+  rec    RECORD;
+  total  MONEY;
+BEGIN
+  i := 0;
+  total := 0;
+  SELECT work_stations
+  INTO needed
+  FROM machines
+  WHERE id = machine_id;
+  FOR rec IN (SELECT
+                staff.id,
+                first_name,
+                hourly_wage
+              FROM staff
+                JOIN staffcanworkon ON staff.id = staffcanworkon.staff_id
+              WHERE staffcanworkon.machine_id = 2
+              ORDER BY hourly_wage) LOOP
+    IF i < needed
+    THEN
+      i := i + 1;
+      total := total + rec.hourly_wage;
+    END IF;
+  END LOOP;
+  RETURN total;
+END;
+$$ LANGUAGE plpgsql;
+
+
 CREATE OR REPLACE FUNCTION calc_production_cost(INT)
   RETURNS MONEY AS
 $$
 DECLARE
-  step ALIAS FOR $1;
+  step_id ALIAS FOR $1;
+  total      MONEY;
+  machine_id INT;
 BEGIN
-
+  SELECT sum(calc_cost(buildstepdependencies.component) * buildstepdependencies.count)
+  INTO total
+  FROM buildstepdependencies
+    JOIN buildsteps ON buildstepdependencies.step = buildsteps.id
+  WHERE buildsteps.id = step_id;
+  IF total IS NULL
+  THEN
+    total := 0;
+  END IF;
+  SELECT machine
+  INTO machine_id
+  FROM buildsteps
+  WHERE id = step_id;
+  total := total + machine_hour_price(machine_id);
+  RETURN total;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -91,5 +142,6 @@ DECLARE
   prod_cost INT;
 BEGIN
 
+  RETURN 111;
 END;
 $$ LANGUAGE plpgsql;

@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS Machines CASCADE;
 DROP TABLE IF EXISTS ServiceVendors CASCADE;
 DROP TABLE IF EXISTS MachineServiceVendor CASCADE;
 DROP TABLE IF EXISTS BuildSteps CASCADE;
-DROP TABLE IF EXISTS BuildStepDependencies CASCADE;
+DROP TABLE IF EXISTS BuildStepDependencies;
 DROP TABLE IF EXISTS BuildPlans CASCADE;
 DROP TABLE IF EXISTS Staff CASCADE;
 DROP TABLE IF EXISTS StaffCanWorkOn CASCADE;
@@ -31,11 +31,11 @@ CREATE TABLE BuildPlans (
 );
 
 CREATE TABLE BuildSteps (
-  id               SERIAL  NOT NULL PRIMARY KEY,
-  result_component INTEGER NOT NULL REFERENCES Components (id) ON DELETE RESTRICT,
-  machine          INTEGER NOT NULL REFERENCES Machines (id) ON DELETE RESTRICT,
-  hours            INTEGER NOT NULL CHECK (hours > 0),
-  plan             INTEGER NOT NULL REFERENCES BuildPlans (id) ON DELETE CASCADE
+  id               SERIAL         NOT NULL PRIMARY KEY,
+  result_component INTEGER UNIQUE NOT NULL REFERENCES Components (id) ON DELETE RESTRICT,
+  machine          INTEGER        NOT NULL REFERENCES Machines (id) ON DELETE RESTRICT,
+  hours            FLOAT          NOT NULL CHECK (hours > 0),
+  plan             INTEGER        NOT NULL REFERENCES BuildPlans (id) ON DELETE CASCADE
 );
 
 ALTER TABLE Components
@@ -44,6 +44,7 @@ ALTER TABLE Components
 CREATE TABLE BuildStepDependencies (
   step      INTEGER NOT NULL REFERENCES BuildSteps (id) ON DELETE CASCADE,
   component INTEGER NOT NULL REFERENCES Components (id) ON DELETE RESTRICT,
+  count     INTEGER NOT NULL CHECK (count > 0) DEFAULT 1,
   PRIMARY KEY (step, component)
 );
 
