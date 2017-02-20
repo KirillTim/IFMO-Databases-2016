@@ -71,3 +71,25 @@ BEGIN
   END LOOP;
 END
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION calc_production_cost(INT)
+  RETURNS MONEY AS
+$$
+DECLARE
+  step ALIAS FOR $1;
+BEGIN
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION calc_cost(INT)
+  RETURNS MONEY AS
+$$
+DECLARE
+  component ALIAS FOR $1;
+  buy_price INT;
+  prod_cost INT;
+BEGIN
+
+END;
+$$ LANGUAGE plpgsql;

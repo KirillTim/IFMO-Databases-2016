@@ -40,3 +40,6 @@ INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(2, 4, 25);
 INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(2, 5, 200);
 INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(2, 6, 250);
 
+INSERT INTO vendors(name) VALUES ('vendor #3');
+INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(3, 5, 190);
+INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(3, 4, 20);
