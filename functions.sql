@@ -29,7 +29,10 @@ BEGIN
   FROM staff
     JOIN staffcanworkon ON staff.id = staffcanworkon.staff_id
   WHERE staffcanworkon.machine_id = machine;
-  SELECT work_stations into needed from machines where machines.id = machine;
+  SELECT work_stations
+  INTO needed
+  FROM machines
+  WHERE machines.id = machine;
   RETURN (have >= needed);
 END
 $$ LANGUAGE plpgsql;
@@ -40,15 +43,12 @@ $$
 DECLARE
   result ALIAS FOR $1;
   machine_id ALIAS FOR $2;
-  hours ALIAS FOR $3;
+  hours_ ALIAS FOR $3;
   plan_id ALIAS FOR $4;
   dependencies ALIAS FOR $5;
-  cnt INT;
-  d   INT;
+  d       INT;
+  step_id INT;
 BEGIN
-  --cnt := array_length(array_agg(DISTINCT dependencies), 1);
-  cnt := array_length(dependencies, 1);
-  --SELECT count(*) INTO cnt FROM components WHERE id = ANY(dependencies);
   FOREACH d IN ARRAY dependencies LOOP
     IF NOT exists(SELECT 1
                   FROM components
@@ -57,7 +57,17 @@ BEGIN
       RAISE EXCEPTION 'unknown component id: %', d;
     END IF;
   END LOOP;
-
-  RAISE INFO 'count= %', cnt;
+  IF NOT is_enough_staff_for_machine(machine_id)
+  THEN
+    RAISE EXCEPTION 'not enough workers for for `%`, id: %', (SELECT name
+                                                              FROM machines
+                                                              WHERE id = machine_id), machine_id;
+  END IF;
+  INSERT INTO buildsteps (result_component, machine, hours, plan) VALUES (result, machine_id, hours_, plan_id)
+  RETURNING id
+    INTO step_id;
+  FOREACH d IN ARRAY dependencies LOOP
+    INSERT INTO buildstepdependencies (step, component) VALUES (step_id, d);
+  END LOOP;
 END
 $$ LANGUAGE plpgsql;

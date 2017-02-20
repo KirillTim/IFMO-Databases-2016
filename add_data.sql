@@ -21,12 +21,12 @@ INSERT INTO servicevendors(id, name, contact_info) VALUES (2, 'vendor2', 'contac
 SELECT * FROM add_support_contract(1, ARRAY [1,2]);
 SELECT * FROM add_support_contract(2, ARRAY [2,3]);
 
-INSERT INTO components(name) VALUES ('spark plugs');
-INSERT INTO components(name, sell_price) VALUES ('engine', 1000);
-INSERT INTO components(name) VALUES ('oil pipe');
-INSERT INTO components(name) VALUES ('small rubber pipe');
-INSERT INTO components(name) VALUES ('main component #1');
-INSERT INTO components(name) VALUES ('main component #2');
+INSERT INTO components(id, name) VALUES (1, 'spark plugs');
+INSERT INTO components(id, name, sell_price) VALUES (2, 'engine', 1000);
+INSERT INTO components(id, name) VALUES (3, 'oil pipe');
+INSERT INTO components(id, name) VALUES (4, 'small rubber pipe');
+INSERT INTO components(id, name) VALUES (5, 'main component #1');
+INSERT INTO components(id, name) VALUES (6, 'main component #2');
 
 INSERT INTO buildplans(name, description) VALUES ('engine build plan', '');
 
