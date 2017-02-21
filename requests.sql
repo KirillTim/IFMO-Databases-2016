@@ -1,6 +1,7 @@
 --best vendors
 SELECT
-  vendor_id, name,
+  vendor_id,
+  name,
   count(vendor_id) AS best_offers
 FROM vendors
   JOIN vendorssell ON vendors.id = vendorssell.vendor_id
@@ -15,8 +16,9 @@ ORDER BY best_offers DESC;
 
 --most important service company
 SELECT
-  servicevendors.id, servicevendors.name,
-  count(*)          AS last_vendor_for_machines_count
+  servicevendors.id,
+  servicevendors.name,
+  count(*) AS last_vendor_for_machines_count
 FROM servicevendors
   JOIN machineservicevendor ON servicevendors.id = machineservicevendor.service_vendor
   JOIN
@@ -33,6 +35,22 @@ ORDER BY last_vendor_for_machines_count DESC
 LIMIT 1;
 
 --average salary by gender
-SELECT gender, avg(hourly_wage::NUMERIC)::money FROM staff GROUP BY gender;
+SELECT
+  gender,
+  avg(hourly_wage :: NUMERIC) :: MONEY
+FROM staff
+GROUP BY gender;
 
 --components sorted by profit
+SELECT id, name, sell_price, calc_cost(id) as cost FROM components WHERE sell_price NOTNULL ORDER BY cost DESC;
+
+--can just resell something?
+SELECT
+  component_id,
+  name,
+  sell_price - price AS profit
+FROM components
+  INNER JOIN vendorssell ON components.id = vendorssell.component_id
+WHERE
+  sell_price NOTNULL AND
+  price < sell_price;

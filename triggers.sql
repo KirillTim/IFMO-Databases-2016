@@ -25,12 +25,21 @@ CREATE TRIGGER check_service_coverage
 BEFORE DELETE OR UPDATE ON machineservicevendor
 FOR EACH ROW EXECUTE PROCEDURE fun_check_service_coverage();
 
--- CREATE OR REPLACE FUNCTION fun_check_build_cycle_dependency()
---   RETURNS TRIGGER AS $$
--- $$ LANGUAGE plpgsql;
---
--- DROP TRIGGER IF EXISTS check_build_cycle_dependency
--- ON buildstepdependencies;
--- CREATE TRIGGER check_build_cycle_dependency
--- BEFORE INSERT OR UPDATE ON buildstepdependencies
--- FOR EACH ROW EXECUTE PROCEDURE fun_check_build_cycle_dependency();
+CREATE OR REPLACE FUNCTION fun_check_dependencies()
+  RETURNS TRIGGER AS $$
+BEGIN
+  IF NOT can_use_component(new.component)
+  THEN
+    RAISE EXCEPTION 'component ' % ', id: % cant be used', (SELECT name
+                                                            FROM components
+                                                            WHERE id = new.component), new.component;
+  END IF;
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS check_dependencies
+ON buildstepdependencies;
+CREATE TRIGGER check_dependencies
+BEFORE INSERT OR UPDATE ON buildstepdependencies
+FOR EACH ROW EXECUTE PROCEDURE fun_check_dependencies();

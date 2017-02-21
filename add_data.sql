@@ -29,6 +29,7 @@ INSERT INTO components(id, name) VALUES (3, 'oil pipe');
 INSERT INTO components(id, name) VALUES (4, 'small rubber pipe');
 INSERT INTO components(id, name) VALUES (5, 'main component #1');
 INSERT INTO components(id, name) VALUES (6, 'main component #2');
+INSERT INTO components(id, name, sell_price) VALUES (7, 'random component', 100);
 
 INSERT INTO vendors(name) VALUES ('vendor #1');
 INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(1, 1, 20);
@@ -43,6 +44,7 @@ INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(2, 6, 250);
 INSERT INTO vendors(name) VALUES ('vendor #3');
 INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(3, 5, 190);
 INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(3, 4, 20);
+INSERT INTO vendorssell(vendor_id, component_id, price) VALUES(3, 7, 95);
 
 INSERT INTO buildplans(name, description) VALUES ('engine build plan', '');
 SELECT * FROM add_build_step(2, 2, 3, 1, ARRAY[5, 6]);

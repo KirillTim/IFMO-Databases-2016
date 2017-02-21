@@ -56,6 +56,10 @@ BEGIN
     THEN
       RAISE EXCEPTION 'unknown component id: %', d;
     END IF;
+    IF d = result
+    THEN
+      RAISE EXCEPTION 'cycle dependency';
+    END IF;
   END LOOP;
   IF NOT is_enough_staff_for_machine(machine_id)
   THEN
@@ -107,6 +111,26 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+CREATE OR REPLACE FUNCTION can_use_component(INT)
+  RETURNS BOOLEAN AS
+$$
+DECLARE
+  comp_id ALIAS FOR $1;
+  prod INT := 0;
+  buy  INT := 0;
+BEGIN
+  SELECT count(*)
+  INTO prod
+  FROM buildsteps
+  WHERE result_component = comp_id;
+  SELECT count(*)
+  INTO buy
+  FROM vendorssell
+  WHERE component_id = comp_id;
+  RETURN prod + buy > 0;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION calc_production_cost(INT)
   RETURNS MONEY AS
 $$
@@ -138,11 +162,33 @@ CREATE OR REPLACE FUNCTION calc_cost(INT)
 $$
 DECLARE
   component ALIAS FOR $1;
-  buy_price INT;
-  prod_cost INT;
+  buy_price MONEY = NULL;
+  prod_cost MONEY = 0 :: MONEY;
+  buildstep INT = NULL;
 BEGIN
+  SELECT id
+  INTO buildstep
+  FROM buildsteps
+  WHERE result_component = component;
 
-  RETURN 111;
+  SELECT min(price)
+  INTO buy_price
+  FROM vendorssell
+  WHERE component_id = component;
+
+
+  IF NOT buildstep ISNULL
+  THEN
+    prod_cost = calc_production_cost(buildstep);
+  ELSE
+    RETURN buy_price;
+  END IF;
+  IF buy_price < prod_cost
+  THEN
+    RETURN buy_price;
+  ELSE
+    RETURN prod_cost;
+  END IF;
 END;
 $$ LANGUAGE plpgsql;
 
