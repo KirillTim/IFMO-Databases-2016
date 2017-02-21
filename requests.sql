@@ -1,6 +1,6 @@
 --best vendors
 SELECT
-  vendor_id,
+  vendor_id, name,
   count(vendor_id) AS best_offers
 FROM vendors
   JOIN vendorssell ON vendors.id = vendorssell.vendor_id
@@ -10,12 +10,12 @@ FROM vendors
         FROM components
           JOIN vendorssell ON components.id = vendorssell.component_id
         GROUP BY id) AS min_price ON min_price.id = vendorssell.component_id AND min_price.price = vendorssell.price
-GROUP BY vendor_id
+GROUP BY (vendor_id, name)
 ORDER BY best_offers DESC;
 
 --most important service company
 SELECT
-  servicevendors.id AS vendor,
+  servicevendors.id, servicevendors.name,
   count(*)          AS last_vendor_for_machines_count
 FROM servicevendors
   JOIN machineservicevendor ON servicevendors.id = machineservicevendor.service_vendor
